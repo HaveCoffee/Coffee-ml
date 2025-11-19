@@ -1,60 +1,102 @@
-# app/main.py
 import os
-from fastapi import FastAPI, Depends, HTTPException, Security, Request
-from fastapi.security.api_key import APIKeyHeader
+import time
+import json
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from openai import OpenAI
 from dotenv import load_dotenv
 
-from . import crud, models
+from . import crud
 from .database import get_db
 
 load_dotenv()
 
 app = FastAPI()
-openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-API_KEY = os.eKEYnviron["TOOL_API_KEY"]
-API_KEY_NAME = "X-API-KEY"
-api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
+ASSISTANT_ID = "asst_SDSZf4hIWjeUso6efLvRFNHm"
+user_id_store = {}
 
-async def get_api_key(api_key: str = Security(api_key_header)):
-    if api_key == API_KEY:
-        return api_key
-    else:
-        raise HTTPException(status_code=403, detail="Could not validate credentials")
+class ChatRequest(BaseModel):
+    thread_id: str | None = None
+    message: str
 
-@app.post("/api/chatkit/session")
-async def create_chatkit_session(request: Request):
-    session = openai_client.chatkit.sessions.create()
-    return {"client_secret": session.client_secret}
+@app.post("/chat")
+async def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
+    thread_id = request.thread_id
+    if not thread_id:
+        # CORRECTED: .beta is required
+        thread = client.beta.threads.create()
+        thread_id = thread.id
 
-
-
-class UserCreateRequest(BaseModel):
-    name: str
-
-class AnswerSaveRequest(BaseModel):
-    user_id: int
-    question_id: int
-    answer_text: str
-
-@app.post("/tools/create_user", dependencies=[Depends(get_api_key)])
-def tool_create_user(request: UserCreateRequest, db: Session = Depends(get_db)):
-    user = crud.create_user(db=db, name=request.name)
-    return {"user_id": user.id, "name": user.name}
-
-@app.post("/tools/get_all_questions", dependencies=[Depends(get_api_key)])
-def tool_get_questions(db: Session = Depends(get_db)):
-    questions = crud.get_all_questions(db=db)
-    return [{"id": q.id, "question_text": q.question_text, "tag": q.tag} for q in questions]
-
-@app.post("/tools/save_answer", dependencies=[Depends(get_api_key)])
-def tool_save_answer(request: AnswerSaveRequest, db: Session = Depends(get_db)):
-    return crud.save_user_answer(
-        db=db,
-        user_id=request.user_id,
-        question_id=request.question_id,
-        answer_text=request.answer_text
+    # CORRECTED: .beta is required
+    client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=request.message
     )
+
+    # CORRECTED: .beta is required
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=ASSISTANT_ID
+    )
+
+    # Main Run Loop
+    while True:
+        # CORRECTED: .beta is required
+        run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run.id)
+
+        if run.status in ['queued', 'in_progress']:
+            time.sleep(1)
+            continue
+
+        if run.status == 'requires_action':
+            tool_outputs = []
+            for tool_call in run.required_action.submit_tool_outputs.tool_calls:
+                arguments = json.loads(tool_call.function.arguments)
+                output = {}
+                
+                if tool_call.function.name == "create_user":
+                    user_obj = crud.create_user(db, name=arguments['name'])
+                    user_id_store[thread_id] = user_obj.id
+                    output = {"user_id": user_obj.id, "name": user_obj.name}
+                
+                elif tool_call.function.name == "save_final_profile":
+                    user_id = arguments.get('user_id') or user_id_store.get(thread_id)
+                    if user_id:
+                        output = crud.save_user_profile(
+                            db,
+                            user_id=user_id,
+                            profile_data=arguments['profile_data']
+                        )
+                        del user_id_store[thread_id]
+                    else:
+                        output = {"status": "error", "message": "Could not find user_id for this thread."}
+
+                tool_outputs.append({
+                    "tool_call_id": tool_call.id,
+                    "output": json.dumps(output)
+                })
+            
+            # CORRECTED: .beta is required
+            run = client.beta.threads.runs.submit_tool_outputs(
+                thread_id=thread_id,
+                run_id=run.id,
+                tool_outputs=tool_outputs
+            )
+            continue
+
+        if run.status == 'completed':
+            # CORRECTED: .beta is required
+            messages = client.beta.threads.messages.list(thread_id=thread_id)
+            assistant_message = messages.data[0].content[0].text.value
+            return {"response": assistant_message, "thread_id": thread_id}
+
+        if run.status in ['failed', 'cancelled', 'expired']:
+            error_details = run.last_error
+            print(f"Run ended with status: {run.status}. Error: {error_details}")
+            raise HTTPException(status_code=500, detail=f"Run ended with status: {run.status}")
+        
+        break

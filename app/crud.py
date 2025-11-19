@@ -9,17 +9,16 @@ def create_user(db: Session, name: str):
     db.refresh(db_user)
     return db_user
 
-def get_all_questions(db: Session):
-    """Returns a list of all onboarding questions."""
-    return db.query(models.Question).order_by(models.Question.id).all()
 
-def save_user_answer(db: Session, user_id: int, question_id: int, answer_text: str):
-    """Saves a user's answer for a specific question."""
-    db_answer = models.UserAnswer(
-        user_id=user_id,
-        question_id=question_id,
-        answer_text=answer_text
-    )
-    db.add(db_answer)
+def save_user_profile(db: Session, user_id: int, profile_data: dict):
+    """Creates or updates a user's profile with the final JSON data."""
+    db_profile = db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
+
+    if db_profile:
+        db_profile.profile_data = profile_data
+    else:
+        db_profile = models.Profile(user_id=user_id, profile_data=profile_data)
+        db.add(db_profile)
+    
     db.commit()
-    return {"status": "success", "answer_id": db_answer.id}
+    return {"status": "success", "user_id": user_id}
