@@ -4,33 +4,48 @@ from .models import Question
 def seed_database():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
-
     db = SessionLocal()
     try:
-        if db.query(Question).count() == 0:
-            q_intro = Question(id=1, question_text="In one line, how would you introduce yourself?", tag="bio_short", is_core_question=True)
-            q_age = Question(id=2, question_text="Which age band fits you?", tag="age_band", is_core_question=True)
-            q_gender = Question(id=3, question_text="How should we note your gender, or should we skip it?", tag="gender", is_core_question=True)
-            q_location = Question(id=4, question_text="What city or pincode would you like to meet in?", tag="city", is_core_question=True)
-            q_meet_type = Question(id=5, question_text="How do you prefer to meet — in-person, virtual, or either?", tag="meet_type", is_core_question=True)
-            q_topics = Question(id=6, question_text="Pick your top 3 topics you love talking about. Some examples are books, movies, sports, tech, or travel.", tag="interest_ids", is_core_question=True)
-            q_goal = Question(id=7, question_text="What's your current goal: friendship, mentorship, collaboration, or casual chat?", tag="goal_id", is_core_question=True)
-            q_preferences = Question(id=8, question_text="Any age/gender preferences for who you meet?", tag="preferred_age_min_max", is_core_question=True)
-            q_availability = Question(id=9, question_text="When are you usually free?", tag="time_buckets", is_core_question=True)
-            q_spots = Question(id=10, question_text="What are some of your favorite meet spots near you?", tag="venue_types", is_core_question=True)
+        if db.query(Question).count() > 0:
+            print("Questions already exist.")
+            return
 
-            db.add_all([q_intro, q_age, q_gender, q_location, q_meet_type, q_topics, q_goal, q_preferences, q_availability, q_spots])
-            db.commit()
+        print("Seeding new question bank...")
+        # L0 - Core Questions (IDs 1-10)
+        core_questions = [
+            Question(id=1, question_text="Beyond your work, what's one thing you're genuinely passionate about?", tag="bio_long", is_core_question=True),
+            Question(id=2, question_text="If you had a free weekend, what activity would you be most excited to do? (e.g., read a book, watch a movie, play a sport)", tag="interest_ids", is_core_question=True),
+            Question(id=3, question_text="What's the most interesting challenge you're working on right now?", tag="user_goals", is_core_question=True),
+            Question(id=4, question_text="How do you prefer to meet new people: in-person or virtual?", tag="meet_type", is_core_question=True),
+            Question(id=5, question_text="What does your ideal weekend availability look like for catching up?", tag="availability_slots", is_core_question=True),
+            Question(id=6, question_text="Are you more of a planner or a spontaneous person for social events?", tag="personality_type", is_core_question=True),
+            Question(id=7, question_text="What kind of connection are you hoping to find here? (e.g., friendship, mentorship)", tag="goal_id", is_core_question=True),
+            Question(id=8, question_text="What topic are you curious about and would love to learn from someone?", tag="user_goals.learn", is_core_question=True),
+            Question(id=9, question_text="Do you prefer a quiet coffee chat or a more active setting like a walk?", tag="venue_types", is_core_question=True),
+            Question(id=10, question_text="How do you feel about reconnecting with friends vs. meeting new people?", tag="audience_filter", is_core_question=True)
+        ]
 
-            follow_up_books = Question(question_text="You mentioned books! Do you read regularly? Any favorite genres?", tag="subcategory", is_core_question=False, parent_question_id=q_topics.id, trigger_keyword="book")
-            follow_up_movies = Question(question_text="You mentioned movies! What kind of movies or shows do you vibe with?", tag="subcategory", is_core_question=False, parent_question_id=q_topics.id, trigger_keyword="movie")
-            follow_up_sports = Question(question_text="You mentioned sports! What sports or activities do you play or watch?", tag="subcategory", is_core_question=False, parent_question_id=q_topics.id, trigger_keyword="sport")
+        # L1 - Follow-up Questions (IDs 11+)
+        l1_follow_ups = [
+            Question(id=11, question_text="You mentioned books. What genre do you usually find yourself reading?", tag="subcategory.book", is_core_question=False, parent_question_id=2, trigger_keyword="book"),
+            Question(id=12, question_text="You mentioned movies. What kind of movies or shows do you enjoy?", tag="subcategory.movie", is_core_question=False, parent_question_id=2, trigger_keyword="movie"),
+            Question(id=13, question_text="You mentioned sports. Which sport do you enjoy the most?", tag="subcategory.sport", is_core_question=False, parent_question_id=2, trigger_keyword="sport"),
+            Question(id=14, question_text="You mentioned work/a project. Do you prefer collaborating or working independently?", tag="profile_attributes.work", is_core_question=False, parent_question_id=3, trigger_keyword="work,project,job"),
+        ]
 
-            db.add_all([follow_up_books, follow_up_movies, follow_up_sports])
-            db.commit()
-            print("Database seeded with full question set.")
-        else:
-            print("Questions already exist in the database.")
+        # L2 - Deeper Follow-up Questions (IDs 15+)
+        l2_deeper_follow_ups = [
+            Question(id=15, question_text="Fantasy is a great genre! Any favorite authors or series?", tag="profile_attributes.book.fantasy", is_core_question=False, parent_question_id=11, trigger_keyword="fantasy"),
+            Question(id=16, question_text="Do you prefer playing or watching?", tag="profile_attributes.sport.preference", is_core_question=False, parent_question_id=13, trigger_keyword="cricket,football,basketball,soccer,tennis,badminton"),
+        ]
+
+        db.add_all(core_questions)
+        db.add_all(l1_follow_ups)
+        db.add_all(l2_deeper_follow_ups)
+        
+        db.commit()
+
+        print("Database successfully seeded with a diverse, multi-layered question bank.")
     finally:
         db.close()
 
