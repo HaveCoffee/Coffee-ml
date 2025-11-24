@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -15,9 +15,13 @@ class Question(Base):
     id = Column(Integer, primary_key=True, index=True)
     question_text = Column(Text, nullable=False, unique=True)
     tag = Column(String, nullable=False)
+    is_core_question = Column(Boolean, default=True)
+    parent_question_id = Column(Integer, ForeignKey("questions.id"), nullable=True)
+    trigger_keyword = Column(String, nullable=True)
+    parent = relationship("Question", remote_side=[id], backref="sub_questions")
 
 class Profile(Base):
     __tablename__ = "profiles"
     user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    profile_data = Column(JSONB)    # This column will store the entire structured JSON from the agent
+    profile_data = Column(JSONB)     
     user = relationship("User", back_populates="profile")

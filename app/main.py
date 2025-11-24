@@ -26,26 +26,21 @@ class ChatRequest(BaseModel):
 async def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
     thread_id = request.thread_id
     if not thread_id:
-        # CORRECTED: .beta is required
         thread = client.beta.threads.create()
         thread_id = thread.id
 
-    # CORRECTED: .beta is required
     client.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
         content=request.message
     )
 
-    # CORRECTED: .beta is required
     run = client.beta.threads.runs.create(
         thread_id=thread_id,
         assistant_id=ASSISTANT_ID
     )
 
-    # Main Run Loop
     while True:
-        # CORRECTED: .beta is required
         run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run.id)
 
         if run.status in ['queued', 'in_progress']:
@@ -57,8 +52,10 @@ async def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
             for tool_call in run.required_action.submit_tool_outputs.tool_calls:
                 arguments = json.loads(tool_call.function.arguments)
                 output = {}
+                if tool_call.function.name == "get_all_questions":
+                    output = crud.get_all_questions(db)
                 
-                if tool_call.function.name == "create_user":
+                elif tool_call.function.name == "create_user":
                     user_obj = crud.create_user(db, name=arguments['name'])
                     user_id_store[thread_id] = user_obj.id
                     output = {"user_id": user_obj.id, "name": user_obj.name}
@@ -80,7 +77,6 @@ async def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
                     "output": json.dumps(output)
                 })
             
-            # CORRECTED: .beta is required
             run = client.beta.threads.runs.submit_tool_outputs(
                 thread_id=thread_id,
                 run_id=run.id,
@@ -89,7 +85,6 @@ async def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
             continue
 
         if run.status == 'completed':
-            # CORRECTED: .beta is required
             messages = client.beta.threads.messages.list(thread_id=thread_id)
             assistant_message = messages.data[0].content[0].text.value
             return {"response": assistant_message, "thread_id": thread_id}

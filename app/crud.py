@@ -22,3 +22,22 @@ def save_user_profile(db: Session, user_id: int, profile_data: dict):
     
     db.commit()
     return {"status": "success", "user_id": user_id}
+
+
+def get_all_questions(db: Session):
+    """
+    Fetches all questions from the database, including their relationships,
+    so the assistant knows which are core questions and which are follow-ups.
+    """
+    questions = db.query(models.Question).order_by(models.Question.id).all()
+    question_data = []
+    for q in questions:
+        question_data.append({
+            "id": q.id,
+            "text": q.question_text,
+            "tag": q.tag,
+            "is_core": q.is_core_question,
+            "parent_id": q.parent_question_id,
+            "trigger": q.trigger_keyword
+        })
+    return question_data
