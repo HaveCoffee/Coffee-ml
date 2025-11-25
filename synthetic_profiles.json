@@ -1,0 +1,1299 @@
+[
+  {
+    "interests": [
+      "Arts & Culture",
+      "Technology",
+      "Travel"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "morning",
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "I'm a tech-savvy art enthusiast who loves exploring new cultures through travel.",
+    "meeting_style": "either",
+    "social_intent": "Mentorship",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Art & Technology crossovers",
+      "Cultural experiences while traveling"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Gaming",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Thursday"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I love to crack jokes over a cup of coffee while discussing the latest food trends, gaming strategies, and music gigs.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Latest food trends",
+      "Gaming strategies",
+      "Music gigs"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Gaming",
+      "Food & Drink",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm always up for an adventure, whether it's exploring new games, trying out delicious food, or grooving to some tunes.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Spontaneous",
+    "conversation_topics": [
+      "Video games",
+      "Culinary experiences",
+      "Favorite music genres"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Arts & Culture",
+      "Food & Drink",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Thursday"
+      ],
+      "time_windows": [
+        "Afternoon",
+        "Evening"
+      ]
+    },
+    "vibe_summary": "I'm a spontaneous individual who thrives on creativity and innovation, seeking mentorship in various aspects of life.",
+    "meeting_style": "either",
+    "social_intent": "Mentorship",
+    "personality_type": "Spontaneous",
+    "conversation_topics": [
+      "Art exhibitions",
+      "Culinary experiences",
+      "Latest tech trends"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Music",
+      "Reading"
+    ],
+    "availability": {
+      "days": [
+        "Monday",
+        "Wednesday",
+        "Friday"
+      ],
+      "time_windows": [
+        "morning",
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "I love exploring new places, jamming to music, and getting lost in a good book!",
+    "meeting_style": "either",
+    "social_intent": "Professional Networking",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Different travel destinations",
+      "Favorite music genres"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Technology",
+      "Travel"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Evenings"
+      ],
+      "time_windows": [
+        "Afternoon",
+        "Evening"
+      ]
+    },
+    "vibe_summary": "I'm always up for an adventure, whether it's exploring new sports, tech innovations, or far-off destinations!",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Adventurous",
+    "conversation_topics": [
+      "Sports & Fitness",
+      "Technology",
+      "Travel"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Outdoor Activities",
+      "Food & Drink",
+      "Travel"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "morning",
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "I love exploring the outdoors, trying new foods, and traveling to new places!",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Analytical",
+    "conversation_topics": [
+      "Hiking trails",
+      "Food experiences"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Reading",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I am a dedicated individual passionate about sports, reading, and technology.",
+    "meeting_style": "in-person",
+    "social_intent": "Professional Networking",
+    "personality_type": "Serious",
+    "conversation_topics": [
+      "Sports & Fitness",
+      "Reading",
+      "Technology"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Arts & Culture",
+      "Food & Drink",
+      "Gaming"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I love exploring art galleries, trying new food spots, and gaming with friends!",
+    "meeting_style": "in-person",
+    "social_intent": "Professional Networking",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Art galleries",
+      "Food trends",
+      "Gaming strategies"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Reading",
+      "Sports & Fitness",
+      "Outdoor Activities"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "morning",
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "I'm a fun-loving bookworm who enjoys staying active and exploring the outdoors!",
+    "meeting_style": "either",
+    "social_intent": "Mentorship",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Books",
+      "Sports"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Travel",
+      "Gaming"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "I'm a curious soul who loves exploring new flavors, cultures, and virtual worlds.",
+    "meeting_style": "either",
+    "social_intent": "Mentorship",
+    "personality_type": "Analytical",
+    "conversation_topics": [
+      "Culinary experiences",
+      "Travel adventures"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Technology",
+      "Food & Drink",
+      "Sports & Fitness"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I love exploring the latest in tech, trying new foods, and staying active with sports and fitness.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Organized",
+    "conversation_topics": [
+      "Artificial Intelligence",
+      "Healthy eating habits"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Gaming",
+      "Music",
+      "Sports & Fitness"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Evenings"
+      ],
+      "time_windows": [
+        "After 6pm"
+      ]
+    },
+    "vibe_summary": "I enjoy gaming, music, and staying active through sports and fitness.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Introverted",
+    "conversation_topics": [
+      "Video games",
+      "Music genres"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Outdoor Activities",
+      "Reading",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I enjoy spending time outdoors, diving into a good book, and getting lost in music.",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Serious",
+    "conversation_topics": [
+      "Nature",
+      "Books",
+      "Music"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Reading",
+      "Travel",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons"
+      ]
+    },
+    "vibe_summary": "I'm a curious soul who loves diving into books, exploring new destinations, and staying updated on the latest in tech.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Creative",
+    "conversation_topics": [
+      "Books",
+      "Travel destinations"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Reading",
+      "Gaming",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I love getting lost in books, gaming adventures, and jamming out to music!",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Books",
+      "Games",
+      "Music"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Sports & Fitness",
+      "Reading"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons"
+      ]
+    },
+    "vibe_summary": "I enjoy exploring new places, staying active, and immersing myself in a good book.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Introverted",
+    "conversation_topics": [
+      "Different travel destinations",
+      "Sports & fitness routines",
+      "Favorite books and authors"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Music",
+      "Reading",
+      "Outdoor Activities"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons"
+      ]
+    },
+    "vibe_summary": "I enjoy relaxing with a good book, exploring nature, and listening to music in my free time.",
+    "meeting_style": "either",
+    "social_intent": "Professional Networking",
+    "personality_type": "Homebody",
+    "conversation_topics": [
+      "Music",
+      "Reading"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Outdoor Activities",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Wednesday"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I love exploring new places, enjoying the outdoors, and geeking out over the latest tech trends.",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Adventurous",
+    "conversation_topics": [
+      "Travel experiences",
+      "Outdoor gear and activities"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Sports & Fitness",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons"
+      ]
+    },
+    "vibe_summary": "I'm always up for an adventure, whether it's exploring new places, hitting the gym, or diving into the latest tech trends.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Spontaneous",
+    "conversation_topics": [
+      "Travel tips",
+      "Sports tech innovations"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Reading",
+      "Food & Drink"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "afternoon",
+        "evening"
+      ]
+    },
+    "vibe_summary": "I am a focused individual who enjoys staying active, reading, and exploring new food experiences.",
+    "meeting_style": "in-person",
+    "social_intent": "Mentorship",
+    "personality_type": "Serious",
+    "conversation_topics": [
+      "Healthy living",
+      "Book recommendations",
+      "Culinary delights"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Gaming",
+      "Reading",
+      "Outdoor Activities"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons"
+      ]
+    },
+    "vibe_summary": "I enjoy gaming, reading, and exploring the outdoors, always up for a new adventure!",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Introverted",
+    "conversation_topics": [
+      "Video games",
+      "Books",
+      "Hiking"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Arts & Culture",
+      "Sports & Fitness",
+      "Reading"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "Organized individual passionate about arts, sports, and reading, seeking a like-minded collaborator.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Organized",
+    "conversation_topics": [
+      "Art exhibitions",
+      "Fitness routines",
+      "Book recommendations"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Music",
+      "Food & Drink",
+      "Sports & Fitness"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I'm a detail-oriented individual who loves music, trying out new foods, and staying active through sports and fitness.",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Analytical",
+    "conversation_topics": [
+      "Music",
+      "Food & Drink",
+      "Sports & Fitness"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Arts & Culture",
+      "Gaming"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons"
+      ]
+    },
+    "vibe_summary": "I'm a fun-loving foodie who enjoys exploring arts and gaming with a touch of humor!",
+    "meeting_style": "in-person",
+    "social_intent": "Friendship",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Different cuisines",
+      "Art exhibitions",
+      "Latest games"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Travel",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "Organized individual who enjoys sports, travel, and technology.",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Organized",
+    "conversation_topics": [
+      "Sports & Fitness",
+      "Travel",
+      "Technology"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Outdoor Activities",
+      "Sports & Fitness",
+      "Travel"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning"
+      ]
+    },
+    "vibe_summary": "I enjoy staying active outdoors, playing sports, and exploring new destinations.",
+    "meeting_style": "either",
+    "social_intent": "Professional Networking",
+    "personality_type": "Introverted",
+    "conversation_topics": [
+      "Outdoor Activities",
+      "Sports & Fitness",
+      "Travel"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Reading",
+      "Travel"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I love exploring new cultures through food, books, and travel!",
+    "meeting_style": "in-person",
+    "social_intent": "Mentorship",
+    "personality_type": "Extroverted",
+    "conversation_topics": [
+      "Culinary experiences",
+      "Literature from around the world"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Arts & Culture",
+      "Sports & Fitness",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Thursday"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I am a creative and active individual who enjoys exploring arts, sports, and technology.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Organized",
+    "conversation_topics": [
+      "Art exhibitions",
+      "Fitness routines",
+      "Latest tech trends"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Technology",
+      "Sports & Fitness",
+      "Reading"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I love exploring the latest in tech, staying active through sports, and getting lost in a good book.",
+    "meeting_style": "either",
+    "social_intent": "Mentorship",
+    "personality_type": "Spontaneous",
+    "conversation_topics": [
+      "Artificial Intelligence",
+      "Workout routines",
+      "Best-sellers"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Technology",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays"
+      ],
+      "time_windows": [
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm a tech-savvy fitness enthusiast with a love for music!",
+    "meeting_style": "either",
+    "social_intent": "Professional Networking",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Sports & Fitness",
+      "Technology",
+      "Music"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Arts & Culture",
+      "Reading"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning"
+      ]
+    },
+    "vibe_summary": "I enjoy staying active, exploring art, and diving into a good book.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Homebody",
+    "conversation_topics": [
+      "Exercise routines",
+      "Art exhibitions",
+      "Book recommendations"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Travel",
+      "Arts & Culture"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm always up for exploring new tastes, places, and experiences with a touch of creativity and culture.",
+    "meeting_style": "in-person",
+    "social_intent": "Friendship",
+    "personality_type": "Spontaneous",
+    "conversation_topics": [
+      "Culinary adventures",
+      "Hidden gems in travel"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Technology",
+      "Arts & Culture"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm a spontaneous soul always seeking new adventures in travel, tech, and arts & culture.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Spontaneous",
+    "conversation_topics": [
+      "New travel destinations",
+      "Emerging technologies",
+      "Art exhibitions"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Music",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm a tech-savvy music lover who dreams of traveling the world.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Homebody",
+    "conversation_topics": [
+      "Travel",
+      "Music"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Reading",
+      "Travel",
+      "Outdoor Activities"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Tuesdays"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm an adventurous soul who loves to dive into books, explore new destinations, and immerse myself in outdoor activities.",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Adventurous",
+    "conversation_topics": [
+      "Books",
+      "Travel experiences",
+      "Outdoor adventures"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Travel",
+      "Sports & Fitness"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Weekdays"
+      ],
+      "time_windows": [
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm a curious explorer who loves trying new foods, embarking on adventures, and staying active through sports and fitness.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Analytical",
+    "conversation_topics": [
+      "Different cuisines",
+      "Travel experiences",
+      "Fitness routines"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Arts & Culture",
+      "Food & Drink",
+      "Travel"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "Passionate about exploring art, food, and new destinations while cherishing quiet moments.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Introverted",
+    "conversation_topics": [
+      "Art galleries",
+      "Culinary experiences",
+      "Adventure destinations"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Gaming",
+      "Sports & Fitness",
+      "Arts & Culture"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "morning",
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "I am a serious individual with a passion for gaming, sports, fitness, and arts & culture.",
+    "meeting_style": "in-person",
+    "social_intent": "Mentorship",
+    "personality_type": "Serious",
+    "conversation_topics": [
+      "Video games",
+      "Exercise routines",
+      "Art exhibitions"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Outdoor Activities",
+      "Gaming",
+      "Reading"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "morning",
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "I'm always up for an adventure, whether it's exploring the outdoors, diving into a new game, or getting lost in a good book.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Adventurous",
+    "conversation_topics": [
+      "Nature excursions",
+      "Favorite video games and books"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Outdoor Activities",
+      "Arts & Culture",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekends"
+      ],
+      "time_windows": [
+        "Afternoons",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm an adventurous soul who loves exploring the outdoors, immersing myself in arts and culture, and grooving to music.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Adventurous",
+    "conversation_topics": [
+      "Outdoor Activities",
+      "Arts & Culture",
+      "Music"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Technology",
+      "Travel",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays"
+      ],
+      "time_windows": [
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm a tech-savvy adventurer with a passion for music looking to connect with like-minded professionals.",
+    "meeting_style": "either",
+    "social_intent": "Professional Networking",
+    "personality_type": "Extroverted",
+    "conversation_topics": [
+      "Latest tech trends",
+      "Travel destinations"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Sports & Fitness",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Saturday",
+        "Sunday"
+      ],
+      "time_windows": [
+        "morning",
+        "afternoon"
+      ]
+    },
+    "vibe_summary": "Passionate about exploring the world through travel, staying active with sports, and embracing the rhythm of music.",
+    "meeting_style": "in-person",
+    "social_intent": "Mentorship",
+    "personality_type": "Creative",
+    "conversation_topics": [
+      "Different travel destinations",
+      "Workout routines",
+      "Favorite music genres"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Travel",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I love cracking jokes and exploring the world through sports, travel, and music.",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Humorous",
+    "conversation_topics": [
+      "Sports & Fitness",
+      "Travel",
+      "Music"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Gaming",
+      "Reading"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Evenings"
+      ],
+      "time_windows": [
+        "7pm-10pm"
+      ]
+    },
+    "vibe_summary": "I'm a serious individual who enjoys exploring new food spots, diving into video games, and getting lost in a good book.",
+    "meeting_style": "either",
+    "social_intent": "Friendship",
+    "personality_type": "Serious",
+    "conversation_topics": [
+      "Cuisine",
+      "Gaming",
+      "Books"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Sports & Fitness",
+      "Food & Drink",
+      "Outdoor Activities"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Evenings"
+      ],
+      "time_windows": [
+        "Late afternoon",
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm a social butterfly who loves staying active, trying new foods, and exploring the outdoors!",
+    "meeting_style": "in-person",
+    "social_intent": "Friendship",
+    "personality_type": "Extroverted",
+    "conversation_topics": [
+      "Sports & Fitness",
+      "Food & Drink",
+      "Outdoor Activities"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Technology",
+      "Travel",
+      "Food & Drink"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays",
+        "Weekends"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "Tech enthusiast who loves exploring new places and trying diverse cuisines!",
+    "meeting_style": "either",
+    "social_intent": "Finding a collaborator",
+    "personality_type": "Extroverted",
+    "conversation_topics": [
+      "Innovations in technology",
+      "Travel experiences",
+      "Food recipes"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Arts & Culture",
+      "Sports & Fitness",
+      "Gaming"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays"
+      ],
+      "time_windows": [
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm a social butterfly who loves exploring art, staying active, and gaming with friends.",
+    "meeting_style": "in-person",
+    "social_intent": "Professional Networking",
+    "personality_type": "Extroverted",
+    "conversation_topics": [
+      "Art exhibitions",
+      "Fitness routines",
+      "Latest gaming trends"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Travel",
+      "Arts & Culture",
+      "Technology"
+    ],
+    "availability": {
+      "days": [
+        "Weekdays"
+      ],
+      "time_windows": [
+        "Evenings"
+      ]
+    },
+    "vibe_summary": "I'm an organized individual who loves exploring the intersection of travel, arts & culture, and technology.",
+    "meeting_style": "either",
+    "social_intent": "Professional Networking",
+    "personality_type": "Organized",
+    "conversation_topics": [
+      "Travel tips",
+      "Artificial intelligence in cultural preservation"
+    ],
+    "preferred_locations": []
+  },
+  {
+    "interests": [
+      "Food & Drink",
+      "Technology",
+      "Music"
+    ],
+    "availability": {
+      "days": [
+        "Weekends",
+        "Wednesday"
+      ],
+      "time_windows": [
+        "Morning",
+        "Afternoon"
+      ]
+    },
+    "vibe_summary": "I'm always up for exploring new tastes, tech innovations, and grooving to the latest beats!",
+    "meeting_style": "either",
+    "social_intent": "Casual chats",
+    "personality_type": "Adventurous",
+    "conversation_topics": [
+      "Food & Drink",
+      "Technology",
+      "Music"
+    ],
+    "preferred_locations": []
+  }
+]
