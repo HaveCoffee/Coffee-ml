@@ -9,6 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     created_at = Column(String, server_default=func.now())
+    onboarding_thread_id = Column(String, nullable=True, unique=True)
     profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
 class Question(Base):
     __tablename__ = "questions"

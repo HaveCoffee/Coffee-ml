@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 
 from . import crud
 from .database import get_db
-
+from . import security 
+from .models import User
 load_dotenv()
 
 app = FastAPI()
@@ -23,17 +24,30 @@ class ChatRequest(BaseModel):
     message: str
 
 @app.post("/chat")
-async def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
+async def handle_chat(request: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(security.get_current_user)):
     thread_id = request.thread_id
     if not thread_id:
+        if not request.user_id:
+            raise HTTPException(status_code=400, detail="user_id is required for a new conversation.")
+        
+        user = current_user
         thread = client.beta.threads.create()
         thread_id = thread.id
-
-    client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=request.message
-    )
+        
+        crud.link_thread_to_user(db, user_id=user.id, thread_id=thread_id)
+        
+        initial_message = f"Hi {user.name}! Let's get your profile set up. {request.message}"
+        client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=initial_message
+        )
+    else:
+        client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=request.message
+        )
 
     run = client.beta.threads.runs.create(
         thread_id=thread_id,
@@ -60,18 +74,18 @@ async def handle_chat(request: ChatRequest, db: Session = Depends(get_db)):
                     user_id_store[thread_id] = user_obj.id
                     output = {"user_id": user_obj.id, "name": user_obj.name}
                 
-                elif tool_call.function.name == "save_final_profile":
-                    user_id = arguments.get('user_id') or user_id_store.get(thread_id)
-                    if user_id:
+                if tool_call.function.name == "save_final_profile":
+                    arguments = json.loads(tool_call.function.arguments)
+                    
+                    user = crud.get_user_by_thread_id(db, thread_id=thread_id)
+                    if user:
                         output = crud.save_user_profile(
                             db,
-                            user_id=user_id,
+                            user_id=user.id, 
                             profile_data=arguments['profile_data']
                         )
-                        del user_id_store[thread_id]
                     else:
-                        output = {"status": "error", "message": "Could not find user_id for this thread."}
-
+                        output = {"status": "error", "message": "Could not find a user linked to this thread."}
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
                     "output": json.dumps(output)

@@ -1,14 +1,22 @@
 from sqlalchemy.orm import Session
 from . import models
 
-def create_user(db: Session, name: str):
-    """Creates a new user with the given name and returns the user object."""
-    db_user = models.User(name=name)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+def get_user(db: Session, user_id: int):
+    """Finds a user by their primary key ID."""
+    return db.query(models.User).filter(models.User.id == user_id).first()
 
+def get_user_by_thread_id(db: Session, thread_id: str):
+    """Finds a user by their associated onboarding thread ID."""
+    return db.query(models.User).filter(models.User.onboarding_thread_id == thread_id).first()
+
+def link_thread_to_user(db: Session, user_id: int, thread_id: str):
+    """Saves the thread_id to the user's record in the database."""
+    user = get_user(db, user_id)
+    if user:
+        user.onboarding_thread_id = thread_id
+        db.commit()
+        return user
+    return None
 
 def save_user_profile(db: Session, user_id: int, profile_data: dict):
     """Creates or updates a user's profile with the final JSON data."""
