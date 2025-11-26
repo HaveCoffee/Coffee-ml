@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 
 from . import crud
 from .database import get_db
-from . import security 
-from .models import User
+from . import security
+from .models import User, Profile
 load_dotenv()
 
 app = FastAPI()
@@ -18,6 +18,12 @@ client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 ASSISTANT_ID = "asst_SDSZf4hIWjeUso6efLvRFNHm"
 user_id_store = {}
+
+class ProfileResponse(BaseModel):
+    user_id: int
+    profile_data: dict | None = None
+    class Config:
+        from_attributes = True
 
 class ChatRequest(BaseModel):
     thread_id: str | None = None
@@ -109,3 +115,22 @@ async def handle_chat(request: ChatRequest, db: Session = Depends(get_db), curre
             raise HTTPException(status_code=500, detail=f"Run ended with status: {run.status}")
         
         break
+
+
+@app.get("/api/profile", response_model=ProfileResponse)
+async def get_own_profile(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(security.get_current_user)
+):
+    """
+    A protected endpoint for a logged-in user to retrieve their own profile.
+    """
+    profile = crud.get_user_profile(db, user_id=current_user.id)
+    
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found. Please complete the onboarding chat first."
+        )
+        
+    return profile

@@ -18,6 +18,12 @@ def link_thread_to_user(db: Session, user_id: int, thread_id: str):
         return user
     return None
 
+def get_user_profile(db: Session, user_id: int):
+    """
+    Retrieves the profile for a given user_id.
+    """
+    return db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
+
 def save_user_profile(db: Session, user_id: int, profile_data: dict):
     """Creates or updates a user's profile with the final JSON data."""
     db_profile = db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
