@@ -40,7 +40,7 @@ async def handle_chat(request: ChatRequest, db: Session = Depends(get_db), curre
         thread = client.beta.threads.create()
         thread_id = thread.id
         
-        crud.link_thread_to_user(db, user_id=user.id, thread_id=thread_id)
+        crud.link_thread_to_user(db, user_id=user.user_id, thread_id=thread_id)
         
         initial_message = f"Hi {user.name}! Let's get your profile set up. {request.message}"
         client.beta.threads.messages.create(
@@ -77,8 +77,8 @@ async def handle_chat(request: ChatRequest, db: Session = Depends(get_db), curre
                 
                 elif tool_call.function.name == "create_user":
                     user_obj = crud.create_user(db, name=arguments['name'])
-                    user_id_store[thread_id] = user_obj.id
-                    output = {"user_id": user_obj.id, "name": user_obj.name}
+                    user_id_store[thread_id] = user_obj.user_id
+                    output = {"user_id": user_obj.user_id, "name": user_obj.name}
                 
                 if tool_call.function.name == "save_final_profile":
                     arguments = json.loads(tool_call.function.arguments)

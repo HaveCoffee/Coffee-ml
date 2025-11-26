@@ -3,7 +3,7 @@ from . import models
 
 def get_user(db: Session, user_id: int):
     """Finds a user by their primary key ID."""
-    return db.query(models.User).filter(models.User.id == user_id).first()
+    return db.query(models.User).filter(models.User.user_id == user_id).first()
 
 def get_user_by_thread_id(db: Session, thread_id: str):
     """Finds a user by their associated onboarding thread ID."""
@@ -17,6 +17,10 @@ def link_thread_to_user(db: Session, user_id: int, thread_id: str):
         db.commit()
         return user
     return None
+
+def get_user_by_mobile(db: Session, mobile_number: str):
+    """Finds a user by their mobile number (for authentication)."""
+    return db.query(models.User).filter(models.User.mobile_number == mobile_number).first()
 
 def get_user_profile(db: Session, user_id: int):
     """
