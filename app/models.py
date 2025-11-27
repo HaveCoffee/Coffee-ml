@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -6,11 +6,11 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 class User(Base):
     __tablename__ = "users"
-    user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(String(32), primary_key=True, index=True) 
     mobile_number = Column(String(20), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
-    name = Column(String, index=True)
-    created_at = Column(String, server_default=func.now())
+    name = Column(String(255), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=False), server_default=func.now())
     onboarding_thread_id = Column(String, nullable=True, unique=True)
     profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
@@ -26,6 +26,6 @@ class Question(Base):
 
 class Profile(Base):
     __tablename__ = "profiles"
-    user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True)
+    user_id = Column(String(32), ForeignKey("users.user_id"), primary_key=True)
     profile_data = Column(JSONB)     
     user = relationship("User", back_populates="profile")

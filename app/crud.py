@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: str):
     """Finds a user by their primary key ID."""
     return db.query(models.User).filter(models.User.user_id == user_id).first()
 
@@ -9,7 +9,7 @@ def get_user_by_thread_id(db: Session, thread_id: str):
     """Finds a user by their associated onboarding thread ID."""
     return db.query(models.User).filter(models.User.onboarding_thread_id == thread_id).first()
 
-def link_thread_to_user(db: Session, user_id: int, thread_id: str):
+def link_thread_to_user(db: Session, user_id: str, thread_id: str):
     """Saves the thread_id to the user's record in the database."""
     user = get_user(db, user_id)
     if user:
@@ -22,13 +22,13 @@ def get_user_by_mobile(db: Session, mobile_number: str):
     """Finds a user by their mobile number (for authentication)."""
     return db.query(models.User).filter(models.User.mobile_number == mobile_number).first()
 
-def get_user_profile(db: Session, user_id: int):
+def get_user_profile(db: Session, user_id: str):
     """
     Retrieves the profile for a given user_id.
     """
     return db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
 
-def save_user_profile(db: Session, user_id: int, profile_data: dict):
+def save_user_profile(db: Session, user_id: str, profile_data: dict):
     """Creates or updates a user's profile with the final JSON data."""
     db_profile = db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
 
