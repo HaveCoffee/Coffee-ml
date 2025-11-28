@@ -1,5 +1,23 @@
+from typing import List
 from sqlalchemy.orm import Session
 from . import models
+from sentence_transformers import SentenceTransformer
+
+
+print("Loading embedding model...")
+EMBEDDING_MODEL = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+embedding_model= SentenceTransformer(EMBEDDING_MODEL)
+print("Embedding model loaded.")
+
+def generate_profile_embedding(profile_data: dict) -> List[float]:
+    try:
+        vibe=profile_data.get('vibe_summary', '')
+        interests = ", ".join(profile_data.get('interests', []))
+        goal = profile_data.get('goal', '')
+        personality = profile_data.get('personality_type', '')
+    except Exception as e:
+        print(f"Error during embedding generation: {e}")
+        return None
 
 def get_user(db: Session, user_id: str):
     """Finds a user by their primary key ID."""
@@ -37,8 +55,14 @@ def save_user_profile(db: Session, user_id: str, profile_data: dict):
     else:
         db_profile = models.Profile(user_id=user_id, profile_data=profile_data)
         db.add(db_profile)
-    
     db.commit()
+    db.refresh(db_profile)
+    print("Generating profile embedding...")
+    profile_embedding = generate_profile_embedding(profile_data)
+    if profile_embedding:
+        db_profile.embedding = profile_embedding
+        db.commit()
+        print("  -> Successfully generated and saved profile embedding.")
     return {"status": "success", "user_id": user_id}
 
 

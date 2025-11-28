@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, Boolean, DateT
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
+from pgvector.sqlalchemy import Vector
 from sqlalchemy.dialects.postgresql import JSONB
 
 class User(Base):
@@ -28,4 +29,5 @@ class Profile(Base):
     __tablename__ = "profiles"
     user_id = Column(String(32), ForeignKey("users.user_id"), primary_key=True)
     profile_data = Column(JSONB)     
+    embedding = Column(Vector(384), nullable=True)
     user = relationship("User", back_populates="profile")

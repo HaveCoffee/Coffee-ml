@@ -1,5 +1,6 @@
 from .database import SessionLocal, engine, Base
 from .models import Question
+from sqlalchemy import text
 
 def seed_database():
     Base.metadata.drop_all(bind=engine)

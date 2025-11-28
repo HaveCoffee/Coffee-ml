@@ -19,6 +19,7 @@ ASSISTANT_ID = "asst_SDSZf4hIWjeUso6efLvRFNHm"
 class ProfileResponse(BaseModel):
     user_id: int
     profile_data: dict | None = None
+    embedding: list[float] | None = None
     class Config:
         from_attributes = True
 
