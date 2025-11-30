@@ -65,10 +65,10 @@ def insert_synthetic_profiles():
         # 5. Commit all changes
         print("\nCommitting all users and profiles to the database...")
         db.commit()
-        print(f"\n✅ Success! All {len(profiles_to_insert)} synthetic users and profiles have been inserted.")
+        print(f"\n Success! All {len(profiles_to_insert)} synthetic users and profiles have been inserted.")
 
     except Exception as e:
-        print(f"\n❌ ERROR during database insertion: {e}")
+        print(f"\n ERROR during database insertion: {e}")
         db.rollback()
     finally:
         db.close()

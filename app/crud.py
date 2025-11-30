@@ -9,15 +9,25 @@ EMBEDDING_MODEL = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 embedding_model= SentenceTransformer(EMBEDDING_MODEL)
 print("Embedding model loaded.")
 
-def generate_profile_embedding(profile_data: dict) -> List[float]:
+def generate_profile_embedding(profile_data: dict) -> list[float]:
+    """
+    Generates a representative embedding for a user profile.
+    MODIFIED FOR DEBUGGING: This will now raise exceptions instead of returning None.
+    """
+    print("\n--- [DEBUG] Inside generate_profile_embedding ---")
     try:
-        vibe=profile_data.get('vibe_summary', '')
+        vibe = profile_data.get('vibe_summary', '')
         interests = ", ".join(profile_data.get('interests', []))
-        goal = profile_data.get('goal', '')
+        goal = profile_data.get('social_intent', '')
         personality = profile_data.get('personality_type', '')
+        combined_text = f"This person is {personality}. Their goal is {goal}. They are interested in {interests}. In their own words: {vibe}"
+        print(f"[DEBUG] Combined text: '{combined_text}'")
+        embedding = embedding_model.encode(combined_text)
+        print("[DEBUG] Embedding generated successfully.")
+        return embedding.tolist()
     except Exception as e:
-        print(f"Error during embedding generation: {e}")
-        return None
+        print(f" [DEBUG] FATAL ERROR during embedding generation. Re-raising exception.")
+        raise e
 
 def get_user(db: Session, user_id: str):
     """Finds a user by their primary key ID."""
