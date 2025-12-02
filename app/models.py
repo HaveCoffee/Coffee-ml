@@ -9,8 +9,8 @@ class User(Base):
     __tablename__ = "users"
     user_id = Column(String(32), primary_key=True, index=True) 
     mobile_number = Column(String(20), unique=True, nullable=False, index=True)
-    password = Column(String(255), nullable=False)
-    name = Column(String(255), nullable=False, index=True)
+    password = Column(String(255), nullable=True)
+    name = Column(String(255), nullable=True, index=True)
     created_at = Column(DateTime(timezone=False), server_default=func.now())
     onboarding_thread_id = Column(String, nullable=True, unique=True)
     profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")

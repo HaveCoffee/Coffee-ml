@@ -3,8 +3,7 @@ from .models import Question
 from sqlalchemy import text
 
 def seed_database():
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+    
     db = SessionLocal()
     try:
         if db.query(Question).count() > 0:
