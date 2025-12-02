@@ -31,6 +31,7 @@ def seed_database():
             Question(id=12, question_text="You mentioned movies. What kind of movies or shows do you enjoy?", tag="subcategory.movie", is_core_question=False, parent_question_id=2, trigger_keyword="movie"),
             Question(id=13, question_text="You mentioned sports. Which sport do you enjoy the most?", tag="subcategory.sport", is_core_question=False, parent_question_id=2, trigger_keyword="sport"),
             Question(id=14, question_text="You mentioned work/a project. Do you prefer collaborating or working independently?", tag="profile_attributes.work", is_core_question=False, parent_question_id=3, trigger_keyword="work,project,job"),
+            Question(id=15, question_text="Great! What city or neighborhood would you prefer to meet in?", tag="preferred_locations", is_core_question=False, parent_question_id=4, trigger_keyword="in-person,either"),
         ]
 
         # L2 - Deeper Follow-up Questions (IDs 15+)

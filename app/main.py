@@ -20,9 +20,15 @@ class ProfileResponse(BaseModel):
     user_id: int
     profile_data: dict | None = None
     embedding: list[float] | None = None
+    class PublicProfileData(BaseModel):
+        vibe_summary: str | None = None
+        interests: list[str] | None = None
+        social_intent: str | None = None
+        personality_type: str | None = None
+    profile_data: PublicProfileData | None = None
     class Config:
         from_attributes = True
-
+    
 class ChatRequest(BaseModel):
     thread_id: str | None = None
     message: str
@@ -111,5 +117,20 @@ async def get_own_profile(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Profile not found. Please complete the onboarding chat first."
+        )
+    return profile
+
+@app.get("/api/profile/{user_id}", response_model=ProfileResponse)
+async def get_user_profile_by_id(profile_user_id:str, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(security.get_current_user)
+    ):
+    print(f"User '{current_user.name}' is requesting the profile of user_id '{profile_user_id}'")
+    profile = crud.get_user_profile(db, user_id=profile_user_id)
+    
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile for the specified user not found."
         )
     return profile
