@@ -9,6 +9,11 @@ EMBEDDING_MODEL = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 embedding_model= SentenceTransformer(EMBEDDING_MODEL)
 print("Embedding model loaded.")
 
+def get_interest_taxonomy(db: Session):
+    """Fetches the official list of canonical interests from the database."""
+    interests = db.query(models.InterestTaxonomy).order_by(models.InterestTaxonomy.id).all()
+    return [interest.name for interest in interests]
+
 def generate_profile_embedding(profile_data: dict) -> list[float]:
     """
     Generates a representative embedding for a user profile.

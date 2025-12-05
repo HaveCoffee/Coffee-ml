@@ -1,11 +1,34 @@
 from .database import SessionLocal, engine, Base
-from .models import Question
+from .models import Question, InterestTaxonomy
 from sqlalchemy import text
 
 def seed_database():
     
     db = SessionLocal()
     try:
+        if db.query(InterestTaxonomy).count() == 0:
+            print("Seeding new interest taxonomy...")
+            
+            canonical_interests = [
+                InterestTaxonomy(id=1, name="Technology"),
+                InterestTaxonomy(id=2, name="Artificial Intelligence"),
+                InterestTaxonomy(id=3, name="Sports"),
+                InterestTaxonomy(id=4, name="Formula 1"),
+                InterestTaxonomy(id=5, name="Reading"),
+                InterestTaxonomy(id=6, name="Books"),
+                InterestTaxonomy(id=7, name="Movies & TV"),
+                InterestTaxonomy(id=8, name="Hiking"),
+                InterestTaxonomy(id=9, name="Travel"),
+                InterestTaxonomy(id=10, name="Food & Drink"),
+                InterestTaxonomy(id=11, name="Music"),
+                InterestTaxonomy(id=12, name="Gaming"),
+                InterestTaxonomy(id=13, name="Photography"),
+                InterestTaxonomy(id=14, name="Arts & Culture"),
+                # ... add any other categories you want ...
+            ]
+            db.add_all(canonical_interests)
+            db.commit()
+            print("Interest taxonomy seeded.")
         if db.query(Question).count() > 0:
             print("Questions already exist.")
             return

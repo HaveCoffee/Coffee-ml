@@ -31,3 +31,8 @@ class Profile(Base):
     profile_data = Column(JSONB)     
     embedding = Column(Vector(384), nullable=True)
     user = relationship("User", back_populates="profile")
+
+class InterestTaxonomy(Base):
+    __tablename__ = "interest_taxonomy"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False, index=True)
