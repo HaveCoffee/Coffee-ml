@@ -98,3 +98,15 @@ def get_all_questions(db: Session):
             "trigger": q.trigger_keyword
         })
     return question_data
+
+def get_match_candidates(db: Session, current_user_id: str):
+    """
+    Fetches all other users who have a completed profile to be considered as
+    potential matches.
+    """
+    # Find all profiles that are not the current user's and have an embedding
+    candidates = db.query(models.Profile).filter(
+        models.Profile.user_id != current_user_id,
+        models.Profile.embedding.is_not(None)
+    ).all()
+    return candidates

@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from . import crud, security
 from .database import get_db
 from .models import User, Profile
+from . import matching
 load_dotenv()
 
 app = FastAPI()
@@ -134,3 +135,45 @@ async def get_user_profile_by_id(profile_user_id:str,
             detail="Profile for the specified user not found."
         )
     return profile
+
+
+@app.get("/api/matches")
+async def get_matches(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(security.get_current_user)
+):
+    """
+    Calculates and returns a ranked list of the best matches for the
+    authenticated user based on the 4-pillar weighted scoring model.
+    """
+    # 1. Get the current user's profile
+    current_user_profile = crud.get_user_profile(db, user_id=current_user.user_id)
+    if not current_user_profile or not current_user_profile.embedding:
+        raise HTTPException(
+            status_code=404, 
+            detail="Your profile is incomplete. Cannot generate matches."
+        )
+
+    # 2. Get all other users as potential candidates
+    candidates = crud.get_match_candidates(db, current_user_id=current_user.user_id)
+    if not candidates:
+        return {"matches": []} # Return empty list if no one else is in the system
+
+    # 3. Score each candidate against the current user
+    scored_matches = []
+    for candidate_profile in candidates:
+        final_score = matching.calculate_final_match_score(
+            current_user_profile, 
+            candidate_profile
+        )
+        scored_matches.append({
+            "score": final_score,
+            "user_id": candidate_profile.user_id,
+            "profile_data": candidate_profile.profile_data # For now, we return the full data
+        })
+
+    # 4. Rank the matches by score (highest first)
+    ranked_matches = sorted(scored_matches, key=lambda x: x['score'], reverse=True)
+
+    # 5. Return the top 10 matches
+    return {"matches": ranked_matches[:10]}
