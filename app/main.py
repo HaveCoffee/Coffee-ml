@@ -10,6 +10,7 @@ from . import crud, security
 from .database import get_db
 from .models import User, Profile
 from . import matching
+from . import security
 load_dotenv()
 
 app = FastAPI()
@@ -17,19 +18,26 @@ client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 ASSISTANT_ID = "asst_SDSZf4hIWjeUso6efLvRFNHm"
 
-class ProfileResponse(BaseModel):
-    user_id: int
-    profile_data: dict | None = None
-    embedding: list[float] | None = None
-    class PublicProfileData(BaseModel):
+IS_DEV_MODE = os.environ.get("DEV_MODE", "false").lower() == "true"
+
+if IS_DEV_MODE:
+    auth_dependency = security.get_current_user_override
+else:
+    auth_dependency = security.get_current_user
+class PublicProfileResponse(BaseModel):
+    """
+    Defines the public-facing data for a user profile.
+    It will automatically select fields from the nested profile_data JSON.
+    """
+    user_id: str
+    class ProfileDataSubset(BaseModel):
         vibe_summary: str | None = None
         interests: list[str] | None = None
         social_intent: str | None = None
         personality_type: str | None = None
-    profile_data: PublicProfileData | None = None
+    profile_data: ProfileDataSubset | None = None
     class Config:
         from_attributes = True
-    
 class ChatRequest(BaseModel):
     thread_id: str | None = None
     message: str
@@ -38,7 +46,7 @@ class ChatRequest(BaseModel):
 async def handle_chat(
     request: ChatRequest, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(security.get_current_user)
+    current_user: User = Depends(auth_dependency)
 ):
     thread_id = request.thread_id
     
@@ -108,10 +116,10 @@ async def handle_chat(
         
         break
 
-@app.get("/api/profile", response_model=ProfileResponse)
+@app.get("/api/profile", response_model=PublicProfileResponse)
 async def get_own_profile(
     db: Session = Depends(get_db),
-    current_user: User = Depends(security.get_current_user)
+    current_user: User = Depends(auth_dependency)
 ):
     profile = crud.get_user_profile(db, user_id=current_user.user_id)
     if not profile:
@@ -121,45 +129,40 @@ async def get_own_profile(
         )
     return profile
 
-@app.get("/api/profile/{user_id}", response_model=ProfileResponse)
-async def get_user_profile_by_id(profile_user_id:str, 
+@app.get("/api/users/{user_id}", response_model=PublicProfileResponse)
+async def get_user_profile_by_id(
+    user_id: str, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(security.get_current_user)
-    ):
-    print(f"User '{current_user.name}' is requesting the profile of user_id '{profile_user_id}'")
-    profile = crud.get_user_profile(db, user_id=profile_user_id)
-    
+    current_user: User = Depends(auth_dependency)
+):
+    print(f"User '{current_user.name}' is requesting the profile of target user_id '{user_id}'")
+    profile = crud.get_user_profile(db, user_id=user_id)
     if not profile:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile for the specified user not found."
-        )
+        raise HTTPException(status_code=404, detail="Profile not found")
     return profile
 
 
 @app.get("/api/matches")
 async def get_matches(
     db: Session = Depends(get_db),
-    current_user: User = Depends(security.get_current_user)
+    current_user: User = Depends(auth_dependency)
 ):
     """
-    Calculates and returns a ranked list of the best matches for the
-    authenticated user based on the 4-pillar weighted scoring model.
+    Calculates and returns a ranked list of the best matches.
     """
-    # 1. Get the current user's profile
     current_user_profile = crud.get_user_profile(db, user_id=current_user.user_id)
-    if not current_user_profile or not current_user_profile.embedding:
+    
+    # FIX: Use 'is None' instead of 'not' for the embedding array
+    if not current_user_profile or current_user_profile.embedding is None:
         raise HTTPException(
             status_code=404, 
             detail="Your profile is incomplete. Cannot generate matches."
         )
 
-    # 2. Get all other users as potential candidates
     candidates = crud.get_match_candidates(db, current_user_id=current_user.user_id)
     if not candidates:
-        return {"matches": []} # Return empty list if no one else is in the system
+        return {"matches": []} 
 
-    # 3. Score each candidate against the current user
     scored_matches = []
     for candidate_profile in candidates:
         final_score = matching.calculate_final_match_score(
@@ -169,11 +172,7 @@ async def get_matches(
         scored_matches.append({
             "score": final_score,
             "user_id": candidate_profile.user_id,
-            "profile_data": candidate_profile.profile_data # For now, we return the full data
+            "profile_data": candidate_profile.profile_data 
         })
-
-    # 4. Rank the matches by score (highest first)
     ranked_matches = sorted(scored_matches, key=lambda x: x['score'], reverse=True)
-
-    # 5. Return the top 10 matches
     return {"matches": ranked_matches[:10]}

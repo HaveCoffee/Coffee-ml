@@ -3,11 +3,10 @@ from sqlalchemy.orm import Session
 from . import models
 from sentence_transformers import SentenceTransformer
 
-
-print("Loading embedding model...")
-EMBEDDING_MODEL = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-embedding_model= SentenceTransformer(EMBEDDING_MODEL)
-print("Embedding model loaded.")
+print("Loading SBERT embedding model...")
+EMBEDDING_MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
+embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME) 
+print("SBERT model loaded successfully.")
 
 def get_interest_taxonomy(db: Session):
     """Fetches the official list of canonical interests from the database."""

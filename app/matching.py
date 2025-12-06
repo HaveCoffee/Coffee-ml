@@ -1,5 +1,5 @@
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer,util
 
 
 def calculate_interest_score(user_a_intersts: list[int], user_b_intersts: list[int]) -> float:
