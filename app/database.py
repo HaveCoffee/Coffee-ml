@@ -6,19 +6,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SQLALCHEMY_DATABASE_URL = os.environ.get("DATABASE_URL")
-
 if not SQLALCHEMY_DATABASE_URL:
-    SQLALCHEMY_DATABASE_URL = "postgresql://coffee_user:coffee_pass@localhost/coffee_db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://coffee_user:coffee_pass@localhost/coffee_db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-print("--- DATABASE CONNECTION ---")
-print(f"FastAPI is connecting to: {SQLALCHEMY_DATABASE_URL}")
-print("--------------------------")
+    raise ValueError("DATABASE_URL environment variable is not set!")
 
+if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 def get_db():
-    db=SessionLocal()
+    db = SessionLocal()
     try:
         yield db
     finally:
