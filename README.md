@@ -90,20 +90,86 @@ sudo journalctl -u coffee-ml -f  # View logs
 
 ## API Endpoints
 
-**Authentication**
-*   Currently handled via manual JWT generation or Dev Mode bypass.
-*   Header: `Authorization: Bearer <TOKEN>`
 
-**Profiles**
-*   `GET /api/profile` - Get authenticated user's profile.
-*   `GET /api/users/{user_id}` - Get public profile of another user.
+All endpoints require the following header for authentication (unless `DEV_MODE=true`):
+*   **Header:** `Authorization`
+*   **Value:** `Bearer <your_jwt_token>`
 
-**Matchmaking**
-*   `GET /api/matches` - Returns top 10 ranked matches based on embedding similarity.
+### 1. Get Own Profile
+Retrieves the profile data for the currently authenticated user.
 
-**Onboarding**
-*   `POST /chat` - Interactive chat session with AI Assistant.
-    *   Payload: `{"message": "Hello", "thread_id": "optional-thread-id"}`
+*   **Endpoint:** `GET /api/profile`
+*   **Parameters:** None
+*   **Response:**
+    ```json
+    {
+      "user_id": "uuid-string",
+      "profile_data": {
+        "vibe_summary": "string",
+        "interests": ["string"],
+        "social_intent": "string",
+        "personality_type": "string"
+      }
+    }
+    ```
+
+### 2. Get Public Profile
+Retrieves the public-facing details of a specific user.
+
+*   **Endpoint:** `GET /api/users/{user_id}`
+*   **Path Parameters:**
+    *   `user_id` (string, required): The UUID of the target user.
+*   **Response:**
+    ```json
+    {
+      "user_id": "target-uuid",
+      "profile_data": { ... }
+    }
+    ```
+
+### 3. Get Matches
+Calculates and returns a ranked list of users based on vector embedding similarity and weighted scoring pillars.
+
+*   **Endpoint:** `GET /api/matches`
+*   **Parameters:** None
+*   **Response:**
+    ```json
+    {
+      "matches": [
+        {
+          "score": 0.95,
+          "user_id": "uuid-string",
+          "profile_data": { ... }
+        },
+        ...
+      ]
+    }
+    ```
+
+### 4. Onboarding Chat
+Initiates or continues a conversation with the AI assistant to build a user profile.
+
+*   **Endpoint:** `POST /chat`
+*   **Headers:** `Content-Type: application/json`
+*   **Body Parameters:**
+    *   `message` (string, required): The user's input text.
+    *   `thread_id` (string, optional): The OpenAI Thread ID returned from the previous response. Omit this for the first message to start a new conversation.
+*   **Example Body:**
+    ```json
+    {
+      "message": "I enjoy hiking and sci-fi books.",
+      "thread_id": "thread_abc123..." 
+    }
+    ```
+*   **Response:**
+    ```json
+    {
+      "response": "That's great! What is your favorite sci-fi book?",
+      "thread_id": "thread_abc123..."
+    }
+    ```
+
+
 
 ## Database Management (Alembic)
 
