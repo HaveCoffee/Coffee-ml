@@ -10,7 +10,7 @@ from .models import User
 SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
 DEV_MODE = os.environ.get("DEV_MODE", "false").lower() == "true"
-DEV_USER_ID = os.environ.get("DEV_USER_ID", "5719256c-bd62-48ca-9be7-76f1fbc7")
+DEV_USER_ID = os.environ.get("DEV_USER_ID", "5719256cbd6248ca9be76f1fbc7")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

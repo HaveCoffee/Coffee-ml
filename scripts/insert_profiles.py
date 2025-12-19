@@ -44,7 +44,7 @@ def insert_synthetic_profiles():
             user_name = fake.name()
             mobile_number = f"+1555000{i:04d}" 
             hashed_password = generate_password_hash("DefaultPassword123!")
-            new_user_id = str(uuid.uuid4())[:32]
+            new_user_id = uuid.uuid4().hex
 
             new_user = User(
                 user_id=new_user_id,
