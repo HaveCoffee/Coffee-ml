@@ -8,7 +8,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from . import crud, security
 from .database import get_db
-from .models import User, Profile
+from .models import User, Profile,Match
 from . import matching
 from . import security
 load_dotenv()
@@ -41,6 +41,9 @@ class PublicProfileResponse(BaseModel):
 class ChatRequest(BaseModel):
     thread_id: str | None = None
     message: str
+
+class StartChatResponse(BaseModel):
+    match_id: str
 
 @app.post("/chat")
 async def handle_chat(
@@ -142,37 +145,69 @@ async def get_user_profile_by_id(
     return profile
 
 
-@app.get("/api/matches")
+@app.get("/api/matches/suggested")
 async def get_matches(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_dependency)
 ):
     """
-    Calculates and returns a ranked list of the best matches.
+    Calculates and returns a ranked list of the people you haven't talked with.
     """
-    current_user_profile = crud.get_user_profile(db, user_id=current_user.user_id)
+    matches= db.query(models.Match).filter(
+        models.Match.user_id==current_user.user_id,
+        models.Match.status=="suggested"
+        ).order_by(models.Match.score.desc()).all()
+    result=[]
+    for m in matches:
+        profile = crud.get_user_profile(db, m.match_id)
+        if profile:
+            result.append({
+                "user_id": m.match_id,
+                "score": m.score,
+                "profile_data": profile.profile_data
+            })
+    return {"matches": result}
+
+@app.get("/api/matches/active")
+async def get_active_matches(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_dependency)
+):
+    matches=db.query(models.Match).filter(
+        models.Match.user_id == current_user.user_id,
+        models.Match.status == "active"
+    ).order_by(models.Match.updated_at.desc()).all()
+    result = []
+    for m in matches:
+        profile=crud.get_user_profile(db, m.match_id)
+        if profile:
+            result.apppend({
+                "user_id": m.match_id,
+                "score": m.score,
+                "profile_data": profile.profile_data
+            })
+    return {"matches":result}
+
+@app.post("/api/matches/start-chat")
+async def start_chat(
+    request: StartChatResponse,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_dependency)
+):
+    match_record = db.query(models.Match).filter(
+        models.Match.user_id == current_user.user_id,
+        models.Match.matched_user_id == request.match_id
+    ).first()
+    if not match_record:
+        match_record = models.Match(
+            user_id=current_user.user_id,
+            matched_user_id=request.match_id,
+            score=0.0,
+            status="active"
+        )
+        db.add(match_record)
+    else:
+        match_record.status = "active"
+    db.commit()
+    return {"status":"success", "message":"Match status updated to active."}
     
-    # FIX: Use 'is None' instead of 'not' for the embedding array
-    if not current_user_profile or current_user_profile.embedding is None:
-        raise HTTPException(
-            status_code=404, 
-            detail="Your profile is incomplete. Cannot generate matches."
-        )
-
-    candidates = crud.get_match_candidates(db, current_user_id=current_user.user_id)
-    if not candidates:
-        return {"matches": []} 
-
-    scored_matches = []
-    for candidate_profile in candidates:
-        final_score = matching.calculate_final_match_score(
-            current_user_profile, 
-            candidate_profile
-        )
-        scored_matches.append({
-            "score": final_score,
-            "user_id": candidate_profile.user_id,
-            "profile_data": candidate_profile.profile_data 
-        })
-    ranked_matches = sorted(scored_matches, key=lambda x: x['score'], reverse=True)
-    return {"matches": ranked_matches[:10]}

@@ -15,9 +15,10 @@ A production-ready FastAPI backend designed for social matchmaking using vector 
 ## Features
 
 *   **Hybrid AI Architecture:** Runs SBERT locally for embeddings/ranking and calls OpenAI for conversational onboarding.
-*   **Vector Search:** Uses Cosine Similarity via `pgvector` to rank user compatibility based on weighted pillars (Interests, Availability, Location, Personality).
+*   **Stateful Matching Engine:** Matches are persisted in the database with specific states (`suggested`, 'active', `passed`, `blocked`). The AI manages suggestions, while users control active chats.
+*   **Vector Search:** Uses Cosine Similarity via `pgvector` to rank user compatibility based on weighted pillars (Interests, Availability, and Personality).
 *   **Schema Management:** Automated, non-destructive database migrations using Alembic.
-*   **Production Hardened:** Configured with Systemd for auto-restart, strict environment variable management, and worker optimization.
+*   **Production Hardened:** Systemd, JWT Auth, and Hex-UUID standardization.
 
 ## Environment Variables (`.env`)
 
@@ -127,24 +128,55 @@ Retrieves the public-facing details of a specific user.
     }
     ```
 
-### 3. Get Matches
-Calculates and returns a ranked list of users based on vector embedding similarity and weighted scoring pillars.
+### 3. Matchmaking & Interactions
 
-*   **Endpoint:** `GET /api/matches`
-*   **Parameters:** None
+**1. Get Suggested Matches (Screen 1)**
+Returns the AI-recommended users that the current user has not interacted with yet.
+*   **Endpoint:** `GET /api/matches/suggested`
 *   **Response:**
     ```json
     {
       "matches": [
         {
+          "user_id": "hex-uuid",
           "score": 0.95,
-          "user_id": "uuid-string",
           "profile_data": { ... }
-        },
-        ...
+        }
       ]
     }
     ```
+
+**2. Get Active Chats (Screen 2)**
+Returns users with whom a chat/connection has been started. These are protected from AI deletion.
+*   **Endpoint:** `GET /api/matches/active`
+*   **Response:**
+    ```json
+    {
+      "matches": [
+        {
+          "user_id": "hex-uuid",
+          "score": 0.88,
+          "last_active": "timestamp",
+          "profile_data": { ... }
+        }
+      ]
+    }
+    ```
+
+**3. Match Actions**
+Perform actions on a specific match.
+
+*   **Start Chat:** Moves a user from 'suggested' to 'active'.
+    *   `POST /api/matches/start-chat`
+    *   Body: `{"match_id": "target-uuid"}`
+
+*   **Pass:** Hides a user from suggestions permanently.
+    *   `POST /api/matches/pass`
+    *   Body: `{"match_id": "target-uuid"}`
+
+*   **Block:** Blocks a user completely (prevents future matching).
+    *   `POST /api/matches/block`
+    *   Body: `{"match_id": "target-uuid"}`
 
 ### 4. Onboarding Chat
 Initiates or continues a conversation with the AI assistant to build a user profile.

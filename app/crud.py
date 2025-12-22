@@ -2,6 +2,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from . import models
 from sentence_transformers import SentenceTransformer
+from . import matching
 
 print("Loading SBERT embedding model...")
 EMBEDDING_MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
@@ -77,6 +78,10 @@ def save_user_profile(db: Session, user_id: str, profile_data: dict):
         db_profile.embedding = profile_embedding
         db.commit()
         print("  -> Successfully generated and saved profile embedding.")
+    try:
+        refresh_user_matches(db, user_id)
+    except Exception as e:
+        print(f"Error refreshing matches: {e}")
     return {"status": "success", "user_id": user_id}
 
 
@@ -109,3 +114,39 @@ def get_match_candidates(db: Session, current_user_id: str):
         models.Profile.embedding.is_not(None)
     ).all()
     return candidates
+
+def refresh_user_matches(db: Session, user_id:str):
+    user_profile= get_user_profile(db, user_id)
+    if not user_profile or not user_profile.embedding is None:
+        print(f"Cannot refresh matches for user {user_id}: profile or embedding missing.")
+        return {"status": "failed", "reason": "Profile or embedding missing."}
+
+    candidates= get_match_candidates(db, current_user_id=user_id)
+    scored_candidates = []
+    for candidate in candidates:
+        score=matching.calculate_final_match_score(user_profile, candidate)
+        scored_candidates.append((candidate.user_id, score))
+    scored_candidates.sort(key=lambda x:x[1], reverse=True)
+    top_10= scored_candidates[:10]
+
+    existing_records= db.query(models.Match).filter(models.Match.user_id==user_id).all()
+    existing_map={m.matched_id:m for m in existing_records}
+    top_10_ids=[x[0] for x in top_10]
+    for match_id, score in top_10:
+        if match_id in existing_map:
+            record= existing_map[match_id]
+            record.score= score
+        else:
+            new_match = models.Match(
+                user_id=user_id,
+                match_id=match_id,
+                score=score,
+                status="suggested"
+            )
+            db.add(new_match)
+    for match_id, record in existing_map.items():
+        if match_id not in top_10_ids:
+            if record.status == "suggested":
+                db.delete(record)
+    db.commit()
+    
