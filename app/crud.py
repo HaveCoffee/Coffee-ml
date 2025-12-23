@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from . import models
 from sentence_transformers import SentenceTransformer
 from . import matching
-
+import numpy as np
 print("Loading SBERT embedding model...")
 EMBEDDING_MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
 embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME) 
@@ -116,37 +116,69 @@ def get_match_candidates(db: Session, current_user_id: str):
     return candidates
 
 def refresh_user_matches(db: Session, user_id:str):
-    user_profile= get_user_profile(db, user_id)
-    if not user_profile or not user_profile.embedding is None:
-        print(f"Cannot refresh matches for user {user_id}: profile or embedding missing.")
-        return {"status": "failed", "reason": "Profile or embedding missing."}
+    """
+    THE TRIGGER:
+    1. Calculates top 10 matches using the AI model.
+    2. Updates the 'matches' table without deleting active chats.
+    """
+    print(f"--- Triggering Match Refresh for {user_id} ---")
+    # 1. Get Current User Profile
+    user_profile = get_user_profile(db, user_id)
+    # Explicit checks to avoid Numpy ambiguity
+    if user_profile is None:
+        print(f" REFRESH FAILED: User profile not found for {user_id}")
+        return
 
-    candidates= get_match_candidates(db, current_user_id=user_id)
+    if user_profile.embedding is None:
+        print(f" REFRESH FAILED: Embedding is None for {user_id}")
+        return
+
+    # 2. Get Candidates (Everyone else)
+    candidates = get_match_candidates(db, current_user_id=user_id)
+    print(f"   -> Found {len(candidates)} candidates to match against.")
+    # 3. Calculate Scores (In Memory)
     scored_candidates = []
     for candidate in candidates:
-        score=matching.calculate_final_match_score(user_profile, candidate)
-        scored_candidates.append((candidate.user_id, score))
-    scored_candidates.sort(key=lambda x:x[1], reverse=True)
-    top_10= scored_candidates[:10]
+        try:
+            score = matching.calculate_final_match_score(user_profile, candidate)
+            scored_candidates.append((candidate.user_id, score))
+        except Exception as e:
+            print(f"   [Warning] Error scoring candidate {candidate.user_id}: {e}")
+            continue
+    # Sort and take Top 10
+    scored_candidates.sort(key=lambda x: x[1], reverse=True)
+    top_10 = scored_candidates[:10]
+    # 4. Upsert Logic
+    try:
+        # Get all existing match records for this user
+        existing_records = db.query(models.Match).filter(models.Match.user_id == user_id).all()
+        existing_map = {m.match_id: m for m in existing_records}
+        top_10_ids = [x[0] for x in top_10]
+        # A. Process the New Top 10
+        for match_id, score in top_10:
+            if match_id in existing_map:
+                # Record exists. Update score ONLY if suggested.
+                record = existing_map[match_id]
+                if record.status == 'suggested':
+                    record.score = score
+            else:
+                # New match! Insert as 'suggested'
+                new_match = models.Match(
+                    user_id=user_id,
+                    match_id=match_id,
+                    score=score,
+                    status="suggested"
+                )
+                db.add(new_match)
+        # B. Cleanup (Remove old 'suggested' that are no longer in Top 10)
+        for match_id, record in existing_map.items():
+            if match_id not in top_10_ids:
+                if record.status == 'suggested':
+                    db.delete(record)
+                # If status == 'active', WE KEEP IT
+        db.commit()
+        print(" Match Refresh Complete (Database Updated)")
+    except Exception as e:
+        print(f" Database Error during upsert: {e}")
+        db.rollback()
 
-    existing_records= db.query(models.Match).filter(models.Match.user_id==user_id).all()
-    existing_map={m.matched_id:m for m in existing_records}
-    top_10_ids=[x[0] for x in top_10]
-    for match_id, score in top_10:
-        if match_id in existing_map:
-            record= existing_map[match_id]
-            record.score= score
-        else:
-            new_match = models.Match(
-                user_id=user_id,
-                match_id=match_id,
-                score=score,
-                status="suggested"
-            )
-            db.add(new_match)
-    for match_id, record in existing_map.items():
-        if match_id not in top_10_ids:
-            if record.status == "suggested":
-                db.delete(record)
-    db.commit()
-    

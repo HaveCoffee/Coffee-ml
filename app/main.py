@@ -6,11 +6,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from openai import OpenAI
 from dotenv import load_dotenv
-from . import crud, security
+from . import crud, security, models, matching
 from .database import get_db
 from .models import User, Profile,Match
-from . import matching
-from . import security
+
 load_dotenv()
 
 app = FastAPI()
@@ -181,7 +180,7 @@ async def get_active_matches(
     for m in matches:
         profile=crud.get_user_profile(db, m.match_id)
         if profile:
-            result.apppend({
+            result.append({
                 "user_id": m.match_id,
                 "score": m.score,
                 "profile_data": profile.profile_data
@@ -196,12 +195,12 @@ async def start_chat(
 ):
     match_record = db.query(models.Match).filter(
         models.Match.user_id == current_user.user_id,
-        models.Match.matched_user_id == request.match_id
+        models.Match.match_id == request.match_id
     ).first()
     if not match_record:
         match_record = models.Match(
             user_id=current_user.user_id,
-            matched_user_id=request.match_id,
+            matched_id=request.match_id,
             score=0.0,
             status="active"
         )

@@ -41,7 +41,7 @@ class Match(Base):
     __tablename__ = "matches"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String(32), ForeignKey("users.user_id"), nullable=False)
-    matched_user_id = Column(String(32), ForeignKey("users.user_id"), nullable=False)
+    match_id = Column(String(32), ForeignKey("users.user_id"), nullable=False)
     score = Column(Float, nullable=False)
     # Status: 'suggested' (Screen 1) or 'active' (Screen 2)
     status = Column(String(20), default="suggested", nullable=False)
