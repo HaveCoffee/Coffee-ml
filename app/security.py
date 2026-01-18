@@ -28,15 +28,18 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("user_id")
+        user_id: str = payload.get("userId") or payload.get("user_id")
         if user_id is None:
+            print("ERROR: JWT payload does not contain 'userId' or 'user_id' claim.")
             raise credentials_exception
-    except JWTError:
+    except JWTError as e:
+        print(f"ERROR: JWT validation failed. Error: {e}")
         raise credentials_exception
 
     user = crud.get_user(db, user_id=user_id)
     if user is None:
-        raise credentials_exception
+        print(f"ERROR: User with ID '{user_id}' from token not found in our database.")
+        raise HTTPException(status_code=404, detail="User not found")
     return user
 
 async def get_current_user_override(db: Session = Depends(get_db)) -> User:
@@ -44,7 +47,7 @@ async def get_current_user_override(db: Session = Depends(get_db)) -> User:
     Bypasses authentication. ONLY active if DEV_MODE=true in .env
     """
     if not DEV_MODE:
-         raise HTTPException(status_code=403, detail="Dev mode is disabled.")
+        raise HTTPException(status_code=403, detail="Dev mode is disabled.")
 
     user = crud.get_user(db, user_id=DEV_USER_ID)
     if user is None:
