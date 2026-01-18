@@ -7,7 +7,7 @@ env/
 */activate
 */activate.csh
 */activate.fish
-
+.env.save
 # Byte-compiled / optimized / C-extensions
 __pycache__/
 *.py[cod]
