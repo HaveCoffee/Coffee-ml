@@ -4,11 +4,17 @@ from . import models
 from sentence_transformers import SentenceTransformer
 from . import matching
 import numpy as np
-print("Loading SBERT embedding model...")
-EMBEDDING_MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
-embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME) 
-print("SBERT model loaded successfully.")
+from sentence_transformers import SentenceTransformer
 
+embedding_model = None
+
+def load_embedding_model():
+    """Loads the SBERT model into the global variable."""
+    global embedding_model
+    if embedding_model is None:
+        model_name = 'sentence-transformers/all-MiniLM-L6-v2'
+        embedding_model = SentenceTransformer(model_name)
+        
 def get_interest_taxonomy(db: Session):
     """Fetches the official list of canonical interests from the database."""
     interests = db.query(models.InterestTaxonomy).order_by(models.InterestTaxonomy.id).all()
