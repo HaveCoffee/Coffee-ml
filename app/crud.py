@@ -128,9 +128,7 @@ def refresh_user_matches(db: Session, user_id:str):
     2. Updates the 'matches' table without deleting active chats.
     """
     print(f"--- Triggering Match Refresh for {user_id} ---")
-    # 1. Get Current User Profile
     user_profile = get_user_profile(db, user_id)
-    # Explicit checks to avoid Numpy ambiguity
     if user_profile is None:
         print(f" REFRESH FAILED: User profile not found for {user_id}")
         return
@@ -151,24 +149,18 @@ def refresh_user_matches(db: Session, user_id:str):
         except Exception as e:
             print(f"   [Warning] Error scoring candidate {candidate.user_id}: {e}")
             continue
-    # Sort and take Top 10
     scored_candidates.sort(key=lambda x: x[1], reverse=True)
     top_10 = scored_candidates[:10]
-    # 4. Upsert Logic
     try:
-        # Get all existing match records for this user
         existing_records = db.query(models.Match).filter(models.Match.user_id == user_id).all()
         existing_map = {m.match_id: m for m in existing_records}
         top_10_ids = [x[0] for x in top_10]
-        # A. Process the New Top 10
         for match_id, score in top_10:
             if match_id in existing_map:
-                # Record exists. Update score ONLY if suggested.
                 record = existing_map[match_id]
                 if record.status == 'suggested':
                     record.score = score
             else:
-                # New match! Insert as 'suggested'
                 new_match = models.Match(
                     user_id=user_id,
                     match_id=match_id,
@@ -176,7 +168,6 @@ def refresh_user_matches(db: Session, user_id:str):
                     status="suggested"
                 )
                 db.add(new_match)
-        # B. Cleanup (Remove old 'suggested' that are no longer in Top 10)
         for match_id, record in existing_map.items():
             if match_id not in top_10_ids:
                 if record.status == 'suggested':
@@ -188,3 +179,33 @@ def refresh_user_matches(db: Session, user_id:str):
         print(f" Database Error during upsert: {e}")
         db.rollback()
 
+def update_match_status(db: Session, user_id: str, match_id: str, new_status: str):
+    """
+    Updates the status of a match record ('active', 'passed', 'blocked').
+    If a record doesn't exist for 'pass' or 'block', it creates one.
+    """
+    allowed_statuses = ["active", "passed", "blocked"]
+    if new_status not in allowed_statuses:
+        return None 
+
+    match_record = db.query(models.Match).filter(
+        models.Match.user_id == user_id,
+        models.Match.match_id == match_id
+    ).first()
+
+    if not match_record:
+        if new_status in ["passed", "blocked"]:
+            match_record = models.Match(
+                user_id=user_id,
+                match_id=match_id,
+                score=0.0, 
+                status=new_status
+            )
+            db.add(match_record)
+        else:
+            return None
+    else:
+        match_record.status = new_status
+        
+    db.commit()
+    return match_record
