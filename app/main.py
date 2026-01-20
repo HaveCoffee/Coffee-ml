@@ -1,6 +1,7 @@
 import os
 import time
 import json
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -8,46 +9,55 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from . import crud, security, models, matching
 from .database import get_db
-from .models import User, Profile,Match
+from .models import User
 
 load_dotenv()
 
-app = FastAPI()
-client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    This function runs once at application startup to pre-load heavy models,
+    preventing timeouts on the first user request.
+    """
+    print("Application startup: Pre-loading ML models...")
+    crud.load_embedding_model()
+    yield
+    print("Application shutdown.")
 
+app = FastAPI(lifespan=lifespan)
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 ASSISTANT_ID = "asst_SDSZf4hIWjeUso6efLvRFNHm"
 
 IS_DEV_MODE = os.environ.get("DEV_MODE", "false").lower() == "true"
-
 if IS_DEV_MODE:
+    print("--- WARNING: RUNNING IN DEV MODE - AUTHENTICATION IS BYPASSED ---")
     auth_dependency = security.get_current_user_override
 else:
     auth_dependency = security.get_current_user
+
+class ChatRequest(BaseModel):
+    thread_id: str | None = None
+    message: str
+
 class PublicProfileResponse(BaseModel):
-    """
-    Defines the public-facing data for a user profile.
-    It will automatically select fields from the nested profile_data JSON.
-    """
     user_id: str
     class ProfileDataSubset(BaseModel):
         vibe_summary: str | None = None
-        interests: list[str] | None = None
+        interests: list | None = None 
         social_intent: str | None = None
         personality_type: str | None = None
     profile_data: ProfileDataSubset | None = None
     class Config:
         from_attributes = True
-class ChatRequest(BaseModel):
-    thread_id: str | None = None
-    message: str
 
-class StartChatResponse(BaseModel):
+class MatchActionRequest(BaseModel):
     match_id: str
 
+# === 4. Onboarding Chat (AI) ===
 @app.post("/chat")
 async def handle_chat(
-    request: ChatRequest, 
-    db: Session = Depends(get_db), 
+    request: ChatRequest,
+    db: Session = Depends(get_db),
     current_user: User = Depends(auth_dependency)
 ):
     thread_id = request.thread_id
@@ -55,9 +65,7 @@ async def handle_chat(
     if not thread_id:
         thread = client.beta.threads.create()
         thread_id = thread.id
-        
         crud.link_thread_to_user(db, user_id=current_user.user_id, thread_id=thread_id)
-        
         initial_message = f"Hi {current_user.name}! Let's get your profile set up. {request.message}"
         client.beta.threads.messages.create(
             thread_id=thread_id, role="user", content=initial_message
@@ -87,14 +95,20 @@ async def handle_chat(
                 if tool_call.function.name == "get_all_questions":
                     output = crud.get_all_questions(db)
                 
+                elif tool_call.function.name == "get_interest_taxonomy":
+                    output = crud.get_interest_taxonomy(db)
+
                 elif tool_call.function.name == "save_final_profile":
-                    user = crud.get_user_by_thread_id(db, thread_id=thread_id)
-                    if user:
-                        output = crud.save_user_profile(
-                            db, user_id=user.user_id, profile_data=arguments['profile_data']
-                        )
+                    if 'profile_data' in arguments:
+                        user = crud.get_user_by_thread_id(db, thread_id=thread_id)
+                        if user:
+                            output = crud.save_user_profile(
+                                db, user_id=user.user_id, profile_data=arguments['profile_data']
+                            )
+                        else:
+                            output = {"status": "error", "message": "Could not find a user for this thread."}
                     else:
-                        output = {"status": "error", "message": "Could not find a user for this thread."}
+                        output = {"status": "error", "message": "The 'profile_data' argument was missing."}
 
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
@@ -117,7 +131,9 @@ async def handle_chat(
             raise HTTPException(status_code=500, detail=f"Run ended with status: {run.status}")
         
         break
+    return {"detail": "An unexpected error occurred in the run loop."} # Safeguard
 
+# === 1. User Profiles ===
 @app.get("/api/profile", response_model=PublicProfileResponse)
 async def get_own_profile(
     db: Session = Depends(get_db),
@@ -125,38 +141,32 @@ async def get_own_profile(
 ):
     profile = crud.get_user_profile(db, user_id=current_user.user_id)
     if not profile:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found. Please complete the onboarding chat first."
-        )
+        raise HTTPException(status_code=404, detail="Profile not found. Please complete the onboarding chat first.")
     return profile
 
 @app.get("/api/users/{user_id}", response_model=PublicProfileResponse)
 async def get_user_profile_by_id(
-    user_id: str, 
-    db: Session = Depends(get_db), 
+    user_id: str,
+    db: Session = Depends(get_db),
     current_user: User = Depends(auth_dependency)
 ):
-    print(f"User '{current_user.name}' is requesting the profile of target user_id '{user_id}'")
     profile = crud.get_user_profile(db, user_id=user_id)
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
     return profile
 
-
+# === 2. Matchmaking (Screens) ===
 @app.get("/api/matches/suggested")
-async def get_matches(
+async def get_suggested_matches(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_dependency)
 ):
-    """
-    Calculates and returns a ranked list of the people you haven't talked with.
-    """
-    matches= db.query(models.Match).filter(
-        models.Match.user_id==current_user.user_id,
-        models.Match.status=="suggested"
-        ).order_by(models.Match.score.desc()).all()
-    result=[]
+    matches = db.query(models.Match).filter(
+        models.Match.user_id == current_user.user_id,
+        models.Match.status == "suggested"
+    ).order_by(models.Match.score.desc()).limit(10).all()
+    
+    result = []
     for m in matches:
         profile = crud.get_user_profile(db, m.match_id)
         if profile:
@@ -172,41 +182,49 @@ async def get_active_matches(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_dependency)
 ):
-    matches=db.query(models.Match).filter(
+    matches = db.query(models.Match).filter(
         models.Match.user_id == current_user.user_id,
         models.Match.status == "active"
     ).order_by(models.Match.updated_at.desc()).all()
+    
     result = []
     for m in matches:
-        profile=crud.get_user_profile(db, m.match_id)
+        profile = crud.get_user_profile(db, m.match_id)
         if profile:
             result.append({
                 "user_id": m.match_id,
                 "score": m.score,
+                "last_active": m.updated_at,
                 "profile_data": profile.profile_data
             })
-    return {"matches":result}
+    return {"matches": result}
 
+# === 3. Match Actions ===
 @app.post("/api/matches/start-chat")
 async def start_chat(
-    request: StartChatResponse,
+    request: MatchActionRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_dependency)
 ):
-    match_record = db.query(models.Match).filter(
-        models.Match.user_id == current_user.user_id,
-        models.Match.match_id == request.match_id
-    ).first()
+    match_record = crud.update_match_status(db, user_id=current_user.user_id, match_id=request.match_id, new_status="active")
     if not match_record:
-        match_record = models.Match(
-            user_id=current_user.user_id,
-            matched_id=request.match_id,
-            score=0.0,
-            status="active"
-        )
-        db.add(match_record)
-    else:
-        match_record.status = "active"
-    db.commit()
-    return {"status":"success", "message":"Match status updated to active."}
-    
+        raise HTTPException(status_code=404, detail="Match not found or cannot be activated.")
+    return {"status": "success", "message": "Moved to active chats"}
+
+@app.post("/api/matches/pass")
+async def pass_user(
+    request: MatchActionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_dependency)
+):
+    crud.update_match_status(db, user_id=current_user.user_id, match_id=request.match_id, new_status="passed")
+    return {"status": "success", "message": "User passed"}
+
+@app.post("/api/matches/block")
+async def block_user(
+    request: MatchActionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_dependency)
+):
+    crud.update_match_status(db, user_id=current_user.user_id, match_id=request.match_id, new_status="blocked")
+    return {"status": "success", "message": "User blocked"}
