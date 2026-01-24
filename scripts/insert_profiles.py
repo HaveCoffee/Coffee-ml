@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 load_dotenv()
 from app.database import SessionLocal
 from app.models import SharedUser, AppUser, Profile
-from app.crud import generate_profile_embedding
+from app.crud import generate_profile_embedding, load_embedding_model
 INPUT_FILE = "synthetic_profiles.json"
 def insert_synthetic_profiles():
     """
@@ -24,6 +24,9 @@ def insert_synthetic_profiles():
     except Exception as e:
         print(f"Error reading JSON file: {e}")
         return
+    print("Loading SBERT model for script...")
+    load_embedding_model()
+    print("Model loaded.")
     db = SessionLocal()
     print("--- Starting Synthetic Profile Insertion ---")
     print("Finding existing shared users without a profile in our system...")

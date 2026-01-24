@@ -10,7 +10,7 @@ class SharedUser(Base):
     
     user_id = Column(String(32), primary_key=True)
     mobile_number = Column(String(20), unique=True, nullable=False)
-    name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=True)
     createdAt = Column("createdAt", DateTime(timezone=True))
     updatedAt = Column("updatedAt", DateTime(timezone=True))
     app_user = relationship("AppUser", back_populates="shared_info", uselist=False)
