@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 load_dotenv()
 from app.database import SessionLocal
-from app.models import User, Profile
+from app.models import SharedUser, Profile
 from app.crud import generate_profile_embedding
 from sqlalchemy.orm import Session
 
