@@ -1,50 +1,35 @@
 import sys
 import os
 from dotenv import load_dotenv
-
-# This ensures the script can find the 'app' module by adding the project root to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 load_dotenv()
-
 from sqlalchemy import text
 from app.database import engine, Base, SessionLocal
-from app.models import Profile, Question, InterestTaxonomy, Match
+from app.models import AppUser, Profile, Question, InterestTaxonomy, Match
 
 def initialize_application_tables():
     """
-    Connects to the database and creates only the tables specific to the
-    Coffee-ML application, leaving the existing 'users' table untouched.
-    It then populates the question bank and interest taxonomy if they are empty.
+    Connects to the database and creates only the tables specific to this
+    application, leaving the shared 'users' table untouched.
     """
     print("--- Starting Application Table Initializer ---")
-    
-    # List of all table objects this application is responsible for.
-    # We get the table object from the SQLAlchemy model using .__table__
-    # This list explicitly tells SQLAlchemy which tables to create.
     app_tables = [
+        AppUser.__table__,
         Profile.__table__,
         Question.__table__,
         InterestTaxonomy.__table__,
         Match.__table__
     ]
-
     db = SessionLocal()
-
     try:
-        # --- STEP 1: ENABLE THE PGVECTOR EXTENSION ---
-        print("1. Enabling pgvector extension (if not exists)...")
+        print("1. Enabling pgvector extension...")
         db.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
         db.commit()
-        print("   -> pgvector extension is enabled.")
 
-        # --- STEP 2: CREATE ONLY THE SPECIFIED TABLES ---
         print("\n2. Creating application-specific tables...")
-        # The key is passing the 'tables' list to create_all.
-        # This tells SQLAlchemy to only create these specific tables and ignore others (like 'users').
         Base.metadata.create_all(bind=engine, tables=app_tables)
-        print("   -> Application tables created successfully.")
+        print("   -> Tables created successfully.")
 
-        # --- STEP 3: SEED THE INTEREST TAXONOMY ---
         if db.query(InterestTaxonomy).count() == 0:
             print("\n3. Seeding new interest taxonomy...")
             canonical_interests = [
@@ -69,10 +54,8 @@ def initialize_application_tables():
         else:
             print("\n3. Interest taxonomy already exists. Skipping.")
 
-        # --- STEP 4: SEED THE QUESTION BANK ---
         if db.query(Question).count() == 0:
             print("\n4. Seeding new question bank...")
-            # L0 - Core Questions (IDs 1-10)
             core_questions = [
                 Question(id=1, question_text="Beyond your work, what's one thing you're genuinely passionate about?", tag="bio_long", is_core_question=True),
                 Question(id=2, question_text="If you had a free weekend, what activity would you be most excited to do? (e.g., read a book, watch a movie, play a sport)", tag="interest_ids", is_core_question=True),
@@ -86,7 +69,6 @@ def initialize_application_tables():
                 Question(id=10, question_text="How do you feel about reconnecting with friends vs. meeting new people?", tag="audience_filter", is_core_question=True)
             ]
 
-            # L1 - Follow-up Questions (IDs 11-15)
             l1_follow_ups = [
                 Question(id=11, question_text="You mentioned books. What genre do you usually find yourself reading?", tag="subcategory.book", is_core_question=False, parent_question_id=2, trigger_keyword="book"),
                 Question(id=12, question_text="You mentioned movies. What kind of movies or shows do you enjoy?", tag="subcategory.movie", is_core_question=False, parent_question_id=2, trigger_keyword="movie"),
@@ -95,7 +77,6 @@ def initialize_application_tables():
                 Question(id=15, question_text="Great! What city or neighborhood would you prefer to meet in?", tag="preferred_locations", is_core_question=False, parent_question_id=4, trigger_keyword="in-person,either"),
             ]
 
-            # L2 - Deeper Follow-up Questions (IDs 16+)
             l2_deeper_follow_ups = [
                 Question(id=16, question_text="Fantasy is a great genre! Any favorite authors or series?", tag="profile_attributes.book.fantasy", is_core_question=False, parent_question_id=11, trigger_keyword="fantasy"),
                 Question(id=17, question_text="Do you prefer playing or watching?", tag="profile_attributes.sport.preference", is_core_question=False, parent_question_id=13, trigger_keyword="cricket,football,basketball,soccer,tennis,badminton"),

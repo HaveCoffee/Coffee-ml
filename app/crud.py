@@ -45,16 +45,16 @@ def get_user(db: Session, user_id: str):
     return db.query(models.User).filter(models.User.user_id == user_id).first()
 
 def get_user_by_thread_id(db: Session, thread_id: str):
-    """Finds a user by their associated onboarding thread ID."""
-    return db.query(models.User).filter(models.User.onboarding_thread_id == thread_id).first()
+    """Finds an AppUser by their associated onboarding thread ID."""
+    return db.query(models.AppUser).filter(models.AppUser.onboarding_thread_id == thread_id).first()
 
 def link_thread_to_user(db: Session, user_id: str, thread_id: str):
-    """Saves the thread_id to the user's record in the database."""
-    user = get_user(db, user_id)
-    if user:
-        user.onboarding_thread_id = thread_id
+    """Saves the thread_id to the AppUser's record."""
+    app_user = db.query(models.AppUser).filter(models.AppUser.user_id == user_id).first()
+    if app_user:
+        app_user.onboarding_thread_id = thread_id
         db.commit()
-        return user
+        return app_user
     return None
 
 def get_user_by_mobile(db: Session, mobile_number: str):
@@ -62,13 +62,11 @@ def get_user_by_mobile(db: Session, mobile_number: str):
     return db.query(models.User).filter(models.User.mobile_number == mobile_number).first()
 
 def get_user_profile(db: Session, user_id: str):
-    """
-    Retrieves the profile for a given user_id.
-    """
+    """Retrieves the profile for a given user_id."""
     return db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
 
 def save_user_profile(db: Session, user_id: str, profile_data: dict):
-    """Creates or updates a user's profile with the final JSON data."""
+    """Creates or updates a user's profile, linking it to the AppUser."""
     db_profile = db.query(models.Profile).filter(models.Profile.user_id == user_id).first()
 
     if db_profile:
